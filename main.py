@@ -1,12 +1,17 @@
 import asyncio
 import logging
 import sys
+import os
 from os import getenv
 from handlers import start, registration, arenda_buy, contin, sell, phone, error
 from aiogram import Bot, Dispatcher
 #from aiogram_sqlite_storage.sqlitestore import SQLStorage
 from middlewares.antiflood import AntiFloodMiddleware
+from db.create import create_table
 
+if not os.path.exists('data/db.sqlite'):
+    create_table()
+    
 #my_storage = SQLStorage('messages.db', serializing_method = 'pickle')
 TOKEN = getenv("BOT_TOKEN")
 dp = Dispatcher()

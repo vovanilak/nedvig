@@ -11,6 +11,7 @@ from keyboard.builders import *
 from data.book import nedvig
 from data.states import Sell
 from filters.repeat import CheckRepeat
+from db.info import *
 #from handlers.arenda_buy import info
 router=Router()
 
@@ -97,8 +98,16 @@ async def sell_end(callback: CallbackQuery, state: FSMContext):
 Этажи: {user_dict['sell_floor']}\n        
 Имя: {user_dict['sell_name']}\n
 Телефон:{user_dict['sell_phone']}"""
-        await callback.message.bot.send_message(chat_id=os.getenv('ADMIN'), 
-                                                text=info)
+        
+        jj = {'is_sell': 1, 'chat_id': int(callback.message.chat.id)}
+        for k, v in user_dict.items():
+            if k.startswith('sell'):
+                jj.update({k: v})
+
+        await add_info(jj)
+        await callback.message.answer(await read_table())
+        #await callback.message.bot.send_message(chat_id=os.getenv('ADMIN'), 
+        #                                        text=info)
         await callback.message.answer('Спасибо, данные записаны!')
         await callback.message.answer('Выберите действие',
                                       reply_markup=form_without(nedvig.keys()))

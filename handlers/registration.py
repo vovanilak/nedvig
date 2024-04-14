@@ -8,10 +8,11 @@ from keyboard import builders
 from aiogram.types import CallbackQuery
 from aiogram.types import ReplyKeyboardRemove
 import os
+import time
 from data.book import nedvig
 from dotenv import load_dotenv
 
-from db.table import *
+from db.info import *
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
@@ -50,31 +51,23 @@ async def reg_end(callback: CallbackQuery, state: FSMContext):
         user_dict = await state.get_data()
         info=f"Имя: {user_dict['reg_name']}\nТелефон:{user_dict['reg_nomer']}\nГород:{user_dict['reg_city']}"
         ch_id = int(callback.message.chat.id)
-        if check_exists('chat_id', ch_id):
-            update_row(
-                ch_id, 
-                {
-                    'reg_name': user_dict['reg_name'],
-                    'reg_nomer': user_dict['reg_nomer'],
-                    'reg_city': user_dict['reg_city']
-                }
-            )
-        else:
-            add_row(
-                {
-                    'chat_id': ch_id,
-                    'reg_name': user_dict['reg_name'],
-                    'reg_nomer': user_dict['reg_nomer'],
-                    'reg_city': user_dict['reg_city']
-                }
-            )
+        await add_info(
+            {
+                'chat_id': ch_id,
+                'reg_name': user_dict['reg_name'],
+                'reg_nomer': user_dict['reg_nomer'],
+                'reg_city': user_dict['reg_city'],
+                'is_reg': 1,
+                'time_updated': time.time()
+            }
+        )
 
-        await callback.message.answer(str(read_table()))
+        await callback.message.answer(await read_table())
         
         #for k, v in user_dict.items():
         #    if k.startswith('reg'):
         #await callback.message.answer(str(s.query(Users).all()[0].id))
-        await callback.message.bot.send_message(chat_id=os.getenv('ADMIN'), text=info)
+        #await callback.message.bot.send_message(chat_id=os.getenv('ADMIN'), text=info)
         await callback.message.answer('Спасибо, вы успешно зарегистрировались!')
         await callback.message.answer('Выберите действие',
                                       reply_markup=builders.form_without(nedvig.keys()))

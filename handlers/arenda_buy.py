@@ -12,6 +12,7 @@ import os
 from dotenv import load_dotenv
 from keyboard.builders import *
 from data.book import nedvig
+from db.info import *
 #from handlers.sell import info
 
 load_dotenv()
@@ -107,11 +108,15 @@ async def stage_anket_info(message,state):
 async def end_anket(callback: CallbackQuery, state: FSMContext):
     if callback.data == 'Верно':
         user_dict = await state.get_data()
+        jj = {'chat_id': int(callback.message.chat.id)}
         if user_dict['want'] == "Аренда недвижимости":
             await state.update_data(is_arenda=1)
+            jj.update({'is_arenda': 1})
         elif user_dict['want'] == "Покупка недвижимости":
             await state.update_data(is_buy=1)
-        info=f"""Город: {user_dict['anket_city']}\n
+            jj.update({'is_buy': 1})
+            
+        info = f"""Город: {user_dict['anket_city']}\n
                  Тип: {user_dict['anket_house']}\n
                  Комнаты: {user_dict['anket_rooms']}\n
                  Проживание: {user_dict['anket_live']}\n
@@ -119,11 +124,15 @@ async def end_anket(callback: CallbackQuery, state: FSMContext):
                  Бюджет: {user_dict['anket_money']}\n
                  Имя: {user_dict['anket_name']}\n
                 Телефон: {user_dict['anket_phone']}\n
-           
-           
-                Адрес: 
             """
-        await callback.message.bot.send_message(chat_id=os.getenv('ADMIN'), text=info)
+        
+        for k, v in user_dict.items():
+            if k.startswith('anket'):
+                jj.update({k: v})
+
+        await add_info(jj)
+        await callback.message.answer(await read_table())
+        #await callback.message.bot.send_message(chat_id=os.getenv('ADMIN'), text=info)
         await callback.message.answer('Спасибо, данные записаны!')
         await callback.message.answer('Выберите действие',
                                       reply_markup=builders.form_without(nedvig.keys()))

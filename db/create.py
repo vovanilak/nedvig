@@ -1,12 +1,6 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import declarative_base
-from sqlalchemy import Column, Integer, String
-from sqlalchemy.orm import sessionmaker
-
-
-engine = create_engine("sqlite:///data/db.sqlite")
-Session = sessionmaker(bind=engine)
-s = Session()
+from sqlalchemy import Column, Integer, String, Float
 
 Base = declarative_base()
 
@@ -15,6 +9,7 @@ class Users(Base):
     id = Column(Integer, primary_key=True, nullable=False)
     chat_id = Column(Integer, nullable=False)
     name = Column(String(250))
+    time_updated = Column(Float)
 
     is_reg=Column(Integer)
     is_buy = Column(Integer) # default=0
@@ -43,21 +38,13 @@ class Users(Base):
     sell_phone = Column(String(20))
     sell_name = Column(String(50))
 
-Base.metadata.create_all(engine)
 
-def add_row(dct: dict):
-    hero = Users(**dct)
-    s.merge(hero)
-    s.commit()
+def create_table():
+    engine = create_engine("sqlite:///data/db.sqlite")
+    Base.metadata.create_all(engine)
 
-def read_table():
-    data = s.query(Users).all()
-    return data[0].id
+if __name__ == '__main__':
+    create_table()
 
-def check_exists(column, value):
-    result = s.query(Users).filter_by(**{column: value}).first()
-    return bool(result)
 
-def update_row(ch_id, dct: dict):
-    s.query(Users).filter_by(chat_id=ch_id).update(dct)
-    
+

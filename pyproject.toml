@@ -12,6 +12,7 @@ aiogram = "^3.4.1"
 python-dotenv = "^1.0.1"
 data = "^0.4"
 sqlalchemy = "^2.0"
+pandas = "^2.2.1"
 
 
 [build-system]

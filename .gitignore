@@ -4,3 +4,4 @@ __pycache__/
 .upm/
 poetry.lock
 pyproject.toml
+data/db.sqlite
