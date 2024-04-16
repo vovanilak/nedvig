@@ -13,7 +13,7 @@ from dotenv import load_dotenv
 from keyboard.builders import *
 from data.book import nedvig
 from db.info import *
-#from handlers.sell import info
+import time
 
 load_dotenv()
 
@@ -99,7 +99,14 @@ async def stage_anket_info(message,state):
     await state.update_data(anket_name=message.text)
     #user_dict[message.from_user.id]=await state.get_data()
     user_dict = await state.get_data()
-    info=f"Имя: {user_dict['anket_name']}\nТелефон:{user_dict['anket_phone']}\nТип:{user_dict['anket_house']}"
+    info = f"""Город: {user_dict['anket_city']}
+ Тип: {user_dict['anket_house']}
+ Комнаты: {user_dict['anket_rooms']}
+ Проживание: {user_dict['anket_live']}
+ Требования: {user_dict['anket_trebovania']}
+ Бюджет: {user_dict['anket_money']}
+ Имя: {user_dict['anket_name']}
+Телефон: {user_dict['anket_phone']}"""
     await message.answer(text=f'Спасибо! Пожалуйста, проверьте данные и нажмите кнопку:\n\n{info}',
                         reply_markup=builders.inline_kb(('Верно', 'Неверно')))
     await state.set_state(Anket.end)
@@ -108,7 +115,7 @@ async def stage_anket_info(message,state):
 async def end_anket(callback: CallbackQuery, state: FSMContext):
     if callback.data == 'Верно':
         user_dict = await state.get_data()
-        jj = {'chat_id': int(callback.message.chat.id)}
+        jj = {'chat_id': int(callback.message.chat.id), 'updat'}
         if user_dict['want'] == "Аренда недвижимости":
             await state.update_data(is_arenda=1)
             jj.update({'is_arenda': 1})
@@ -117,21 +124,24 @@ async def end_anket(callback: CallbackQuery, state: FSMContext):
             jj.update({'is_buy': 1})
             
         info = f"""Город: {user_dict['anket_city']}\n
-                 Тип: {user_dict['anket_house']}\n
-                 Комнаты: {user_dict['anket_rooms']}\n
-                 Проживание: {user_dict['anket_live']}\n
-                 Требования: {user_dict['anket_trebovania']}\n
-                 Бюджет: {user_dict['anket_money']}\n
-                 Имя: {user_dict['anket_name']}\n
-                Телефон: {user_dict['anket_phone']}\n
-            """
+ Тип: {user_dict['anket_house']}\n
+ Комнаты: {user_dict['anket_rooms']}\n
+ Проживание: {user_dict['anket_live']}\n
+ Требования: {user_dict['anket_trebovania']}\n
+ Бюджет: {user_dict['anket_money']}\n
+ Имя: {user_dict['anket_name']}\n
+Телефон: {user_dict['anket_phone']}"""
         
         for k, v in user_dict.items():
             if k.startswith('anket'):
                 jj.update({k: v})
 
         await add_info(jj)
-        await callback.message.answer(await read_table())
+        for adm in os.getenv('ADMIN').split(','):
+            await callback.message.bot.send_message(
+                chat_id=adm, 
+                text=info,
+            )
         #await callback.message.bot.send_message(chat_id=os.getenv('ADMIN'), text=info)
         await callback.message.answer('Спасибо, данные записаны!')
         await callback.message.answer('Выберите действие',
