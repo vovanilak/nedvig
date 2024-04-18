@@ -3,3 +3,4 @@ python-dotenv
 cachetools
 sqlalchemy==2.0
 pandas==2.2.1
+openpyxl

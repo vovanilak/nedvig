@@ -13,6 +13,7 @@ from keyboard.builders import *
 from data.book import nedvig
 from data.states import TELEPHONE
 import os
+from utils.info import *
 
 router=Router()
 
@@ -26,10 +27,12 @@ async def stage_phone_telephone(message: Message, state: FSMContext):
 async def stage_phone_end(message: Message, state: FSMContext):
     await state.update_data(tele_phone=message.text)
     user_dct = await state.get_data()
-    await message.bot.send_message(
-        chat_id=os.getenv('ADMIN'), 
-        text=f"""Нужно позвонить.\n\nИмя: {user_dct['tele_name']}\nТелефон: {user_dct['tele_phone']}\nПовод: {user_dct['want']}"""
-    )
+    #await message.bot.send_message(
+    #    chat_id=os.getenv('ADMIN'), 
+    #    text=f"""Нужно позвонить.\n\nИмя: {user_dct['tele_name']}\nТелефон: {user_dct['tele_phone']}\nПовод: {user_dct['want']}"""
+    #)
+    
+    add_n_send(state_name='tele', db_name='tele', state=state, chat_id=message.chat.id)
     await message.answer(f"Спасибо! Ожидайте нашего звонка")
     await message.answer(f"Выберите действие")
     await state.update_data(tele_phone=message.text)

@@ -6,6 +6,7 @@ from aiogram.fsm.context import FSMContext
 from keyboard import builders
 from filters.repeat import CheckRepeat
 from aiogram.fsm.state import default_state
+from aiogram.filters import and_f, or_f
 
 router=Router()
 
@@ -16,7 +17,10 @@ router=Router()
 async def get_id(message: Message):
     await message.answer(str(message.chat.id))
 
-@router.message(~CheckRepeat('is_reg'), Command('start'))
+@router.message(
+    ~CheckRepeat('is_reg'), 
+    Command('start')
+)
 async def start_command(message: Message):
     await message.answer(
         text='Добро пожаловать! Это бот такой-то. '

@@ -3,12 +3,15 @@ import logging
 import sys
 import os
 from os import getenv
-from handlers import start, registration, arenda_buy, contin, sell, phone, error
+from handlers import start, registration, arenda_buy, contin, sell, phone, error, admin
 from aiogram import Bot, Dispatcher
 #from aiogram_sqlite_storage.sqlitestore import SQLStorage
 from middlewares.antiflood import AntiFloodMiddleware
 from db.create import create_table
 
+if os.path.exists('nedvig'):
+    os.chdir('nedvig')
+    
 if not os.path.exists('data/db.sqlite'):
     create_table()
     
@@ -27,6 +30,7 @@ async def main():
         phone.router,
         arenda_buy.router,
         sell.router,
+        admin.router,
         error.router,
     )
     

@@ -62,8 +62,6 @@ async def reg_end(callback: CallbackQuery, state: FSMContext):
             }
         )
 
-        await callback.message.answer(await read_table())
-        
         #for k, v in user_dict.items():
         #    if k.startswith('reg'):
         #await callback.message.answer(str(s.query(Users).all()[0].id))

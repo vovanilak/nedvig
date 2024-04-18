@@ -14,6 +14,7 @@ from filters.repeat import CheckRepeat
 from db.info import *
 from dotenv import load_dotenv
 import time
+from utils.info import *
 
 load_dotenv()
 #from handlers.arenda_buy import info
@@ -77,14 +78,7 @@ async def stage_anket_telephone(message: Message, state: FSMContext):
 async def stage_anket_name(message: Message, state: FSMContext):
     await state.update_data(sell_name=message.text)
     await state.set_state(Sell.info)
-    user_dict = await state.get_data()
-    info=f"""Адрес: {user_dict['sell_city']}\n
-Адрес2: {user_dict['sell_adress']}\n
-Комнаты: {user_dict['sell_room']}\n
-Метраж: {user_dict['sell_metrage']}\n
-Этажи: {user_dict['sell_floor']}\n        
-Имя: {user_dict['sell_name']}\n
-Телефон:{user_dict['sell_phone']}"""
+    info = await state_info('sell', state)
     await message.answer(f'Данные верны?\n{info}', 
                          reply_markup=inline_kb(('Верны', 
                                                  'Есть ошибка')))
@@ -94,27 +88,7 @@ async def stage_anket_name(message: Message, state: FSMContext):
 async def sell_end(callback: CallbackQuery, state: FSMContext):
     if callback.data == 'Верны':
         await state.update_data(is_sell=1)
-        user_dict = await state.get_data()
-        info=f"""Адрес: {user_dict['sell_city']}\n
-Адрес2: {user_dict['sell_adress']}\n
-Комнаты: {user_dict['sell_room']}\n
-Метраж: {user_dict['sell_metrage']}\n
-Этажи: {user_dict['sell_floor']}\n        
-Имя: {user_dict['sell_name']}\n
-Телефон:{user_dict['sell_phone']}"""
-        
-        jj = {'is_sell': 1, 'chat_id': int(callback.message.chat.id), 'time_updated': time.time()}
-        for k, v in user_dict.items():
-            if k.startswith('sell'):
-                jj.update({k: v})
-
-        await add_info(jj)
-        #await callback.message.answer(await read_table())
-        for adm in os.getenv('ADMIN').split(','):
-            await callback.message.bot.send_message(
-                chat_id=adm, 
-                text=info,
-            )
+        await add_n_send('sell', state, callback.message.chat.id)
         await callback.message.answer('Спасибо, данные записаны!')
         await callback.message.answer('Выберите действие',
                                       reply_markup=form_without(nedvig.keys()))

@@ -4,13 +4,11 @@ from db.create import Users
 import pandas as pd
 from sqlalchemy import update
 
-
-
 async def read_table():
     engine = create_engine("sqlite:///data/db.sqlite")
     Session = sessionmaker(bind=engine)
     s = Session()
-    df = pd.read_sql_table('users', engine).to_string()
+    df = pd.read_sql_table('users', engine)
     s.close()
     return df
 
