@@ -11,13 +11,15 @@ from db.create import create_table
 
 if os.path.exists('nedvig'):
     os.chdir('nedvig')
-    
+
 if not os.path.exists('data/db.sqlite'):
     create_table()
-    
+
 #my_storage = SQLStorage('messages.db', serializing_method = 'pickle')
 TOKEN = getenv("BOT_TOKEN")
+#dp = Dispatcher(storage=my_storage)
 dp = Dispatcher()
+
 
 async def main():
     bot = Bot(TOKEN)
@@ -33,8 +35,9 @@ async def main():
         admin.router,
         error.router,
     )
-    
+
     await dp.start_polling(bot)
+
 
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO, stream=sys.stdout)

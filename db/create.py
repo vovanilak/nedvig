@@ -45,7 +45,7 @@ class Users(Base):
 
 
 def create_table():
-    engine = create_engine("sqlite:///nedvig/data/db.sqlite")
+    engine = create_engine("sqlite:///data/db.sqlite")
     Base.metadata.create_all(engine)
 
 if __name__ == '__main__':
