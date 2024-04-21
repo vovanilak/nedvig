@@ -23,8 +23,7 @@ async def get_id(message: Message):
 )
 async def start_command(message: Message):
     await message.answer(
-        text='Добро пожаловать! Это бот такой-то. '
-        'Потом напишу. Пожалуйста, пройдите регистрацию, чтобы открыть все функции бота',
+        text='Добро пожаловать! Это бот по продаже, покупке и аренде недвиижмости ',
         reply_markup=builders.form_without((
         'ТГ канал', "Задать вопрос", "О компании", "Регистрация"))
     )

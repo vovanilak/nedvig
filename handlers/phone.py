@@ -32,7 +32,11 @@ async def stage_phone_end(message: Message, state: FSMContext):
     #    text=f"""Нужно позвонить.\n\nИмя: {user_dct['tele_name']}\nТелефон: {user_dct['tele_phone']}\nПовод: {user_dct['want']}"""
     #)
     
-    add_n_send(state_name='tele', db_name='tele', state=state, chat_id=message.chat.id)
+    add_n_send(
+        db_name='tele',
+        state='tele',
+        chat_id=message.chat.id
+    )
     await message.answer(f"Спасибо! Ожидайте нашего звонка")
     await message.answer(f"Выберите действие")
     await state.update_data(tele_phone=message.text)
