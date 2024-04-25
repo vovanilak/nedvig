@@ -30,7 +30,7 @@ async def stage_anket_city(message: Message, state: FSMContext):
 @router.callback_query(Anket.house, F.data.in_(["Квартира","Дом"]))
 async def stage_anket_house(callback: CallbackQuery, state: FSMContext):
     await state.update_data(anket_house=callback.data)
-    await callback.message.answer("Введите площадь в квадратных метрах")
+    await callback.message.answer("Введите площадь в квадратных метрах. Укажите цифрами🔢")
     await callback.answer()#убрать загрузку кнопки
     await state.set_state(Anket.square)
     
@@ -45,6 +45,7 @@ async def stage_anket_square(message: Message, state: FSMContext):
     await message.answer("Сколько комнат?",
                          reply_markup=inline_kb(['1','2','3','4','5','6']))
     await state.update_data(anket_square=message.text)
+
 @router.message(Anket.square)
 async def stage_anket_square_error(message: Message):
     await message.answer("Нужно использовать только цифры,введите еще раз.")
@@ -69,24 +70,37 @@ async def stage_anket_trebonia(message: Message, state: FSMContext):
     
 @router.message(Anket.money)
 async def stage_anket_money(message: Message, state: FSMContext):
-    await message.answer("Какой у вас бюджет? Укажите только цифрами🔢")
+    await message.answer(
+        text="Какой у вас бюджет? Напишите в тысячах, например, 2 млн = 2 000 тыс. Укажите цифрами🔢"
+    )
     await state.update_data(anket_trebovania=message.text)
     await state.set_state(Anket.number)
+
 @router.message(Anket.number, F.text.isdigit())
 async def stage_anket_number(message: Message, state: FSMContext):
-    await message.answer("Введите свой номер телефона")
+    await message.answer("Введите свой номер телефона в формате +79999999999")
     await state.update_data(anket_money=int(message.text))
     await state.set_state(Anket.name)
     
 @router.message(Anket.number)
 async def stage_anket_number_error(message):
-    await message.answer("Данные не правильные,повторите попытку")
+    await message.answer("Данные неправильные, повторите попытку")
     
-@router.message(Anket.name)
+@router.message(
+    Anket.name,
+    F.text.startswith("+"), 
+    F.text[1:].isdigit(),
+    len(F.text) > 10,
+)
 async def stage_anket_name(message: Message, state: FSMContext):
     await message.answer("Введите имя")
-    await state.update_data(anket_phone=message.text)
+    await state.update_data(anket_phone=message.text[1:])
     await state.set_state(Anket.info)
+
+@router.message(Anket.name)
+async def stage_phone_error(message: Message):
+    await message.answer("Данные неправильные, повторите попытку. Формат: +79999999999"
+    'Минимум 10 символов, номер должен начинаться с +')
 
 @router.message(Anket.info)
 async def stage_anket_info(message,state):
@@ -102,7 +116,7 @@ async def stage_anket_info(message,state):
 async def end_anket(callback: CallbackQuery, state: FSMContext):
     if callback.data == 'Верно':
         user_dict = await state.get_data()
-        await add_n_send(db_name='anket', state=state, chat_id=int(callback.message.chat.id))
+        await add_n_send(state=state, chat_id=int(callback.message.chat.id))
         await callback.message.answer('Спасибо, данные записаны!')
         await callback.message.answer('Выберите действие',
                                       reply_markup=builders.form_without(nedvig.keys()))

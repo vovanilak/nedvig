@@ -10,9 +10,6 @@ from aiogram.filters import and_f, or_f
 
 router=Router()
 
-#router.message.middleware(CheckRegistration())
-#фильтр на не зарегистрированных пользователей
-
 @router.message(Command('getid'))
 async def get_id(message: Message):
     await message.answer(str(message.chat.id))
@@ -32,7 +29,7 @@ async def start_command(message: Message):
 async def start_command_old(message: Message, state: FSMContext):
     await state.set_state(default_state)
     await message.answer(
-        text='Это бот такой-то. Потом напишу. Выберите действие',
+        text='Это бот по продаже, покупке и аренде недвиижмости',
         reply_markup=builders.form_without(nedvig.keys())
     )
     

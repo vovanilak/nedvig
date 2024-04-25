@@ -24,7 +24,7 @@ router=Router()
 async def stage_anket_city(message: Message, state: FSMContext):
     await state.update_data(sell_city=message.text)
     await state.set_state(Sell.adress)
-    await message.answer("Введите адрес вашей недвижимости")
+    await message.answer("Введите адрес Вашей недвижимости")
 
 @router.message(Sell.adress)
 async def stage_anket_adress(message: Message, state: FSMContext):
@@ -56,7 +56,7 @@ async def stage_anket_metrage(message: Message, state: FSMContext):
 
 @router.message(Sell.metrage)
 async def stage_anket_metrage_error(message: Message):
-    await message.answer(text="ошибка, вы используете буквы,Сколько у вас этажей (введите цифру в квадратных метрах)?")
+    await message.answer(text="Ошибка, Вы используете буквы. Сколько у вас этажей (введите цифру в квадратных метрах)?")
 
 @router.message(Sell.floor, F.text.isdigit())
 async def stage_anket_floor(message: Message, state: FSMContext):
@@ -66,7 +66,7 @@ async def stage_anket_floor(message: Message, state: FSMContext):
 
 @router.message(Sell.floor)
 async def stage_anket_floor_error(message: Message):
-    await message.answer(text="ошибка,Сколько у вас этажей (введите цифру)?")
+    await message.answer(text="Ошибка, Вы используете буквы. Сколько у вас этажей (введите цифру)?")
 
 @router.message(Sell.telephone)
 async def stage_anket_telephone(message: Message, state: FSMContext):
@@ -88,7 +88,7 @@ async def stage_anket_name(message: Message, state: FSMContext):
 async def sell_end(callback: CallbackQuery, state: FSMContext):
     if callback.data == 'Верны':
         await state.update_data(is_sell=1)
-        await add_n_send('sell', state, callback.message.chat.id)
+        await add_n_send(state, callback.message.chat.id)
         await callback.message.answer('Спасибо, данные записаны!')
         await callback.message.answer('Выберите действие',
                                       reply_markup=form_without(nedvig.keys()))

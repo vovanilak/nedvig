@@ -8,6 +8,8 @@ from filters.repeat import CheckRepeat
 from keyboard.builders import *
 from data.book import nedvig
 from aiogram.filters import or_f, and_f
+from db import info
+from handlers import start
 
 router=Router()
 
@@ -117,6 +119,8 @@ async def stage_continue_old(message: Message, state: FSMContext):
 )
 async def ask_continue_old(callback: CallbackQuery, state: FSMContext):
     await callback.answer()
+    #a = info.find_user_info(chat_id=callback.message.chat.id,
+    #column_name='want')
     a = await state.get_data()
     if a['want'] in ("Аренда недвижимости", "Покупка недвижимости"):
         await state.set_state(Anket.city)
@@ -127,6 +131,8 @@ async def ask_continue_old(callback: CallbackQuery, state: FSMContext):
         await state.set_state(Sell.city)
         await callback.message.answer("Пожалуйста, введите город продажи",
                                      reply_markup=ReplyKeyboardRemove())
+    else:
+        await start.start_command_old(callback.message, state)
 
 @router.callback_query(
     CheckRepeat('is_reg'),

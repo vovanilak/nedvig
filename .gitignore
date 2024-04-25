@@ -5,9 +5,7 @@ replit.nix
 .upm/
 poetry.lock
 pyproject.toml
-data/db.sqlite
 NEDVIG.py
-dandlers/repeat_sell.py
 .env
 filters/__pycache__/
 handlers/__pycache__/
@@ -16,3 +14,5 @@ data/__pycache__/
 keyboard/__pycache__/
 middleware/__pycache__/
 utils/__pycache__/
+.gitignore
+tags

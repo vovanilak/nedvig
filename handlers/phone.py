@@ -27,18 +27,16 @@ async def stage_phone_telephone(message: Message, state: FSMContext):
 async def stage_phone_end(message: Message, state: FSMContext):
     await state.update_data(tele_phone=message.text)
     user_dct = await state.get_data()
-    #await message.bot.send_message(
-    #    chat_id=os.getenv('ADMIN'), 
-    #    text=f"""Нужно позвонить.\n\nИмя: {user_dct['tele_name']}\nТелефон: {user_dct['tele_phone']}\nПовод: {user_dct['want']}"""
-    #)
     
     add_n_send(
-        db_name='tele',
         state='tele',
         chat_id=message.chat.id
     )
     await message.answer(f"Спасибо! Ожидайте нашего звонка")
-    await message.answer(f"Выберите действие")
+    await message.answer(
+        f"Выберите действие",
+        reply_markup=builders.form_without(nedvig.keys())
+    )
     await state.update_data(tele_phone=message.text)
     await state.set_state(default_state)
 

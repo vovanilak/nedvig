@@ -62,10 +62,6 @@ async def reg_end(callback: CallbackQuery, state: FSMContext):
             }
         )
 
-        #for k, v in user_dict.items():
-        #    if k.startswith('reg'):
-        #await callback.message.answer(str(s.query(Users).all()[0].id))
-        #await callback.message.bot.send_message(chat_id=os.getenv('ADMIN'), text=info)
         await callback.message.answer('Спасибо, вы успешно зарегистрировались!')
         await callback.message.answer('Выберите действие',
                                       reply_markup=builders.form_without(nedvig.keys()))
