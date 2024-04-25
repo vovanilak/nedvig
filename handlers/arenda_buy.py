@@ -90,7 +90,6 @@ async def stage_anket_number_error(message):
     Anket.name,
     F.text.startswith("+"), 
     F.text[1:].isdigit(),
-    len(F.text) > 10,
 )
 async def stage_anket_name(message: Message, state: FSMContext):
     await message.answer("Введите имя")
